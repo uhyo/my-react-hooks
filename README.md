@@ -18,7 +18,8 @@ function Test() {
   const stateRef = useRefMemo(() => state, [state]);
   useEffect(() => {
     // `console.log` always outputs *current* value of `state`.
-    return setInterval(() => console.log(stateRef.current), 1000);
+    const timerid = setInterval(() => console.log(stateRef.current), 1000);
+    return () => clearTimeout(timerid);
   }, []);
   return /* omitted */;
 }
