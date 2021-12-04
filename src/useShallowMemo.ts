@@ -1,4 +1,4 @@
-import { useRef, useEffect, DependencyList, useMemo } from "react";
+import { useRef, DependencyList, useMemo } from "react";
 
 /**
  * Memoizes result of given function.
@@ -20,12 +20,24 @@ export function useShallowMemo<T extends {}>(
       return res;
     }
     // compare with previous one
-    const changed =
-      prev !== res &&
-      Object.keys(res).some(key => (prev as any)[key] !== (res as any)[key]);
-    if (changed) {
+    const isChanged = (() => {
+      if (prev === res) {
+        return false;
+      }
+
+      const resKeys = Object.keys(res);
+      const prevKeys = Object.keys(prev);
+
+      return (
+        resKeys.length !== prevKeys.length ||
+        resKeys.some(key => (prev as any)[key] !== (res as any)[key])
+      );
+    })();
+
+    if (isChanged) {
       current.current = res;
     }
     return current.current;
   }, deps);
 }
+
